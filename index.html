@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#09172c">
+  <title>กิจกรรมสืบสานวัฒนธรรมไทย - เทศบาลตำบลห้วยลาน</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="night-overlay" aria-hidden="true"></div>
+  <div class="stars" aria-hidden="true"></div>
+
+  <!-- ส่วนหัวเว็บไซต์ -->
+  <header class="topbar">
+    <div class="brand">
+      <img src="logo.png" alt="โลโก้เทศบาลตำบลห้วยลาน" class="school-logo" style="border-radius:50%; background:#fff; border:1px solid #f8d889;">
+      <div>
+        <span class="brand-eyebrow">กิจกรรมสืบสานวัฒนธรรมไทย</span>
+        <strong>เทศบาลตำบลห้วยลาน</strong>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="header-counter" style="background: rgba(18, 10, 38, 0.85); border: 1px solid rgba(255, 215, 0, 0.5); padding: 6px 16px; border-radius: 30px; color: #ffd700; font-size: 0.85rem; font-weight: 500;">
+        🏮 ยอดผู้ลอยกระทง: <span id="totalKrathongCount" style="font-weight: 700; color: #fff;">0</span> คน
+      </div>
+      <span class="festival-tag"><span class="live-dot"></span> LOY KRATHONG FESTIVAL</span>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="hero" aria-labelledby="pageTitle">
+      <span class="eyebrow">✦ ร่วมสืบสานประเพณีไทย ✦</span>
+      <h1 id="pageTitle">ลอยกระทง<span>ออนไลน์</span></h1>
+      <p>ส่งต่อคำอธิษฐานดี ๆ ให้ล่องลอยไปกับสายน้ำใต้แสงจันทร์</p>
+    </section>
+
+    <button id="showFormBtn" class="floating-toggle-btn" style="display: none;">🪷 ลอยกระทงเพิ่ม</button>
+
+    <section class="ui-container" id="formContainer" aria-label="สร้างกระทงของคุณ">
+      <div class="panel-heading">
+        <span class="step">01</span>
+        <div>
+          <h2>เลือกกระทงที่ชอบ</h2>
+          <p>แตะเลือกกระทงสวย ๆ 1 ใน 5 แบบของคุณ</p>
+        </div>
+      </div>
+      
+      <div id="krathongChoices" class="choices" role="group" aria-label="เลือกรูปกระทง">
+        <img src="1.png" data-src="1.png" alt="กระทงแบบที่ 1" class="selected" tabindex="0" role="button" aria-pressed="true">
+        <img src="2.png" data-src="2.png" alt="กระทงแบบที่ 2" tabindex="0" role="button" aria-pressed="false">
+        <img src="3.png" data-src="3.png" alt="กระทงแบบที่ 3" tabindex="0" role="button" aria-pressed="false">
+        <img src="4.png" data-src="4.png" alt="กระทงแบบที่ 4" tabindex="0" role="button" aria-pressed="false">
+        <img src="5.png" data-src="5.png" alt="กระทงแบบที่ 5" tabindex="0" role="button" aria-pressed="false">
+      </div>
+
+      <div class="panel-heading second">
+        <span class="step">02</span>
+        <div>
+          <h2>เขียนคำอธิษฐาน</h2>
+          <p>ขอให้สิ่งดี ๆ เกิดขึ้นกับคุณและคนที่รัก</p>
+        </div>
+      </div>
+      <label for="wishInput" class="input-label">ชื่อและคำอธิษฐานของคุณ</label>
+      <div class="input-wrap" style="margin-bottom: 10px;">
+        <input type="text" id="userNameInput" maxlength="30" autocomplete="off" placeholder="ระบุชื่อของคุณ...">
+      </div>
+      <div class="input-wrap">
+        <input type="text" id="wishInput" maxlength="100" autocomplete="off" placeholder="คำอธิษฐาน เช่น ขอให้มีความสุข สุขภาพแข็งแรง…">
+        <span id="charCount" aria-hidden="true">0/100</span>
+      </div>
+
+      <button id="btnFloat" type="button" disabled><span aria-hidden="true">✦</span> กำลังเชื่อมต่อ...</button>
+      <p id="statusMessage" role="status" aria-live="polite">กำลังเชื่อมต่อ Firebase...</p>
+      <p class="privacy-note">✧ ไม่ต้องสมัครสมาชิก • กรุณาอย่าใส่ข้อมูลส่วนตัวในคำอธิษฐาน</p>
+    </section>
+
+    <div class="river-title" aria-hidden="true"><span>✦</span> สายน้ำแห่งคำอธิษฐาน (แสดงกระทง Real-time) <span>✦</span></div>
+    
+    <div id="floatingArea" aria-label="กระทงที่กำลังลอย"></div>
+  </main>
+
+  <!-- ปุ่มควบคุมเปิด/ปิดเพลง (ใช้ไฟล์เสียง MP3 ตรงจากลิงก์สำรองที่รองรับการเล่นบนเว็บเบราว์เซอร์) -->
+  <div style="position:fixed; bottom:20px; right:20px; z-index:999;">
+    <button id="audioToggleBtn" style="padding:10px 18px; border-radius:30px; border:1px solid #f8d889; background:rgba(16,44,88,0.95); color:#ffd700; font-family:'Prompt',sans-serif; font-weight:600; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.6);">
+      🎵 เปิดเพลงเทศกาล
+    </button>
+  </div>
+
+  <audio id="festivalAudio" loop>
+    <source src="https://actions.google.com/sounds/v1/ambiences/relaxing_waters.ogg" type="audio/ogg">
+    <source src="https://www.bensound.com/bensound-music/bensound-relaxing.mp3" type="audio/mpeg">
+  </audio>
+
+  <footer>กิจกรรมสืบสานวัฒนธรรมไทย เทศบาลตำบลห้วยลาน • ลอยกระทงอย่างสร้างสรรค์</footer>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+  <script src="script.js"></script>
+
+  <script>
+    const audioBtn = document.getElementById('audioToggleBtn');
+    const audioEl = document.getElementById('festivalAudio');
+    let isPlaying = false;
+
+    audioBtn.addEventListener('click', () => {
+      if (!isPlaying) {
+        audioEl.play().then(() => {
+          isPlaying = true;
+          audioBtn.textContent = "🔇 ปิดเสียงเพลง";
+        }).catch(err => {
+          console.error("Audio play error:", err);
+          alert("กรุณาคลิกที่หน้าจอก่อน 1 ครั้ง แล้วกดปุ่มเปิดเพลงอีกครั้งครับ");
+        });
+      } else {
+        audioEl.pause();
+        isPlaying = false;
+        audioBtn.textContent = "🎵 เปิดเพลงเทศกาล";
+      }
+    });
+  </script>
+</body>
+</html>
