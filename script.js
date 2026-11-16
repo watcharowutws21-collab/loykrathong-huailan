@@ -23,7 +23,7 @@ const wishesListContainer = document.getElementById("wishesListContainer");
 
 let selectedKrathong = "1.png";
 
-// Toggle form display
+// เปิด/ปิด ฟอร์มลอยกระทง
 if (showFormBtn && formContainer) {
   showFormBtn.addEventListener("click", () => {
     formContainer.classList.toggle("hidden");
@@ -33,7 +33,7 @@ if (showFormBtn && formContainer) {
   });
 }
 
-// Choice selection
+// เลือกรูปแบบกระทง
 choicesImg.forEach(img => {
   img.addEventListener("click", () => {
     choicesImg.forEach(i => {
@@ -46,7 +46,7 @@ choicesImg.forEach(img => {
   });
 });
 
-// Char count & validation
+// ตรวจสอบความถูกต้องของฟอร์ม
 function validateForm() {
   const nameVal = userNameInput.value.trim();
   const wishVal = wishInput.value.trim();
@@ -63,20 +63,19 @@ function validateForm() {
 userNameInput.addEventListener("input", validateForm);
 wishInput.addEventListener("input", validateForm);
 
-// Anonymous Auth & Realtime Sync
+// เชื่อมต่อระบบ Firebase แบบไม่ระบุตัวตน (Anonymous Auth)
 auth.signInAnonymously().then(() => {
   statusMessage.textContent = "พร้อมลอยกระทงแล้ว";
   btnFloat.innerHTML = "✦ ลอยกระทงทันที";
   validateForm();
 }).catch(err => {
-  console.error(err);
-  statusMessage.textContent = "เชื่อมต่อล้มเหลว กรุณารีเฟรชใหม่";
+  console.error("Auth error:", err);
+  statusMessage.textContent = "เชื่อมต่อระบบล้มเหลว กรุณารีเฟรชใหม่";
 });
 
-// Fetch all krathongs in real-time
+// อัปเดตรายการคำอธิษฐานและยอดรวมใน Sidebar แบบ Real-time
 db.ref("krathongs").on("value", snapshot => {
   const data = snapshot.val();
-  floatingArea.innerHTML = '<div class="river-waves"></div>';
   wishesListContainer.innerHTML = '';
 
   if (!data) {
@@ -88,7 +87,6 @@ db.ref("krathongs").on("value", snapshot => {
   const keys = Object.keys(data);
   totalCountEl.textContent = keys.length;
 
-  // Render sidebar wishes (latest first)
   const sortedKeys = keys.reverse();
   sortedKeys.forEach(key => {
     const item = data[key];
@@ -99,19 +97,25 @@ db.ref("krathongs").on("value", snapshot => {
       <div class="wish-card-text">"${escapeHTML(item.wish || '')}"</div>
     `;
     wishesListContainer.appendChild(card);
-
-    // Render floating krathong on river
-    spawnRealKrathong(key, item);
   });
 });
 
+// ป้องกัน HTML Injection เพื่อความปลอดภัย
 function escapeHTML(str) {
   return str.replace(/[&<>'"]/g, 
     tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
   );
 }
 
-function spawnRealKrathong(key, item) {
+// สร้างกระทงจริงบนแม่น้ำโดยไม่รบกวนกระทงอื่นเมื่อมีข้อมูลใหม่เข้ามา
+db.ref("krathongs").limitToLast(40).on("child_added", snapshot => {
+  const item = snapshot.val();
+  if (item) {
+    spawnRealKrathong(item);
+  }
+});
+
+function spawnRealKrathong(item) {
   const node = document.createElement("div");
   node.className = "krathong user-krathong";
   
@@ -128,17 +132,18 @@ function spawnRealKrathong(key, item) {
 
   inner.append(img, wishDiv);
   node.appendChild(inner);
-  floatingArea.appendChild(node);
-
-  const width = floatingArea.clientWidth || window.innerWidth;
-  const height = floatingArea.clientHeight || 450;
   
-  // Random vertical position
-  const bottomPos = Math.random() * (height * 0.75);
+  const floatingAreaEl = document.getElementById("floatingArea");
+  if (!floatingAreaEl) return;
+  floatingAreaEl.appendChild(node);
+
+  const width = floatingAreaEl.clientWidth || window.innerWidth;
+  const height = floatingAreaEl.clientHeight || 450;
+  
+  const bottomPos = Math.random() * (height * 0.7);
   node.style.bottom = `${bottomPos}px`;
   
-  // Floating animation across screen
-  const duration = 24000 + Math.random() * 8000;
+  const duration = 26000 + Math.random() * 8000;
   node.style.left = "-200px";
   node.style.transition = `transform ${duration}ms linear`;
 
@@ -153,7 +158,7 @@ function spawnRealKrathong(key, item) {
   }, duration + 500);
 }
 
-// Submit new krathong
+// กดปุ่มส่งกระทง
 btnFloat.addEventListener("click", () => {
   const nameVal = userNameInput.value.trim();
   const wishVal = wishInput.value.trim();
@@ -176,7 +181,7 @@ btnFloat.addEventListener("click", () => {
     formContainer.classList.add("hidden");
     setTimeout(() => { statusMessage.textContent = ""; }, 4000);
   }).catch(err => {
-    console.error(err);
+    console.error("Firebase write error:", err);
     statusMessage.textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่";
     btnFloat.removeAttribute("disabled");
   });
