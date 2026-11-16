@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- ฉากหลังท้องฟ้า พระจันทร์ และโคมลอยขยับได้ -->
+  <!-- ฉากหลังท้องฟ้า พระจันทร์ และโคมลอย -->
   <div class="sky-background" aria-hidden="true">
     <div class="big-moon"></div>
     <div class="floating-lanterns">
@@ -44,13 +44,13 @@
       <span class="eyebrow">✦ ร่วมสืบสานประเพณีไทย ✦</span>
       <h1 id="pageTitle">ลอยกระทง<span>ออนไลน์</span></h1>
       <p>ส่งต่อคำอธิษฐานดี ๆ ให้ล่องลอยไปกับสายน้ำใต้แสงจันทร์</p>
+      
+      <!-- ปุ่มสำหรับกดเพื่อร่วมลอยกระทง (แสดงเด่นชัดตั้งแต่เข้าเว็บ) -->
+      <button id="showFormBtn" class="floating-toggle-btn" style="margin-top: 15px; font-size: 1.05rem; padding: 10px 24px;">🪷 ร่วมลอยกระทงของคุณ</button>
     </section>
 
-    <!-- ปุ่มเปิดฟอร์ม -->
-    <button id="showFormBtn" class="floating-toggle-btn" style="display: none;">🪷 ลอยกระทงเพิ่ม</button>
-
-    <!-- กล่องฟอร์มหลัก -->
-    <section class="ui-container" id="formContainer" aria-label="สร้างกระทงของคุณ">
+    <!-- กล่องฟอร์มหลัก (ซ่อนไว้ก่อน เปิดเฉพาะตอนกดปุ่มร่วมลอยกระทง) -->
+    <section class="ui-container hidden" id="formContainer" aria-label="สร้างกระทงของคุณ">
       <div class="panel-heading">
         <span class="step">01</span>
         <div>
@@ -74,7 +74,7 @@
           <p>ขอให้สิ่งดี ๆ เกิดขึ้นกับคุณและคนที่รัก</p>
         </div>
       </div>
-      <label for="wishInput" class="input-label">ชื่อและคำอธิษฐานของคุณ</label>
+      <label for="userNameInput" class="input-label">ชื่อและคำอธิษฐานของคุณ</label>
       <div class="input-wrap" style="margin-bottom: 10px;">
         <input type="text" id="userNameInput" maxlength="30" autocomplete="off" placeholder="ระบุชื่อของคุณ...">
       </div>
@@ -88,17 +88,15 @@
       <p class="privacy-note">✧ ไม่ต้องสมัครสมาชิก • กรุณาอย่าใส่ข้อมูลส่วนตัวในคำอธิษฐาน</p>
     </section>
 
-    <!-- เลย์เอาต์แม่น้ำและกล่องคำอธิษฐานด้านข้างแบบตรงเรฟ -->
+    <!-- เลย์เอาต์หลัก: แม่น้ำและกระทงทุกคน + กล่องคำอธิษฐานขวาสุด -->
     <div class="content-layout">
-      <!-- พื้นที่แม่น้ำเต็มจอ -->
       <div class="river-wrapper">
-        <div class="river-title" aria-hidden="true"><span>✦</span> สายน้ำแห่งคำอธิษฐาน (แสดงกระทง Real-time) <span>✦</span></div>
         <div id="floatingArea" aria-label="กระทงที่กำลังลอย">
           <div class="river-waves"></div>
         </div>
       </div>
 
-      <!-- กล่องคำอธิษฐานด้านข้าง -->
+      <!-- กล่องคำอธิษฐานด้านขวาสุด -->
       <aside class="wishes-panel" aria-label="กล่องคำอธิษฐานล่าสุด">
         <div class="wishes-panel-header">
           <span>📜 สำหรับแสดงคำอธิษฐาน</span>
@@ -124,11 +122,12 @@
 
   <footer>กิจกรรมสืบสานวัฒนธรรมไทย เทศบาลตำบลห้วยลาน • ลอยกระทงอย่างสร้างสรรค์</footer>
 
-  <!-- Firebase Scripts -->
+  <!-- Firebase & Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <script src="script.js"></script>
+  <script src="krathong-bots.js"></script>
 
   <script>
     const audioBtn = document.getElementById('audioToggleBtn');
