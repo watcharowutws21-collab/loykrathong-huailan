@@ -1,4 +1,4 @@
-// Firebase Configuration & Main Logic
+// Firebase Configuration
 const firebaseConfig = {
   databaseURL: "https://loykrathong-74274-default-rtdb.asia-southeast1.firebasedatabase.app/"
 };
@@ -6,7 +6,6 @@ const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig);
 }
-const auth = firebase.auth();
 const db = firebase.database();
 
 const showFormBtn = document.getElementById("showFormBtn");
@@ -20,8 +19,27 @@ const statusMessage = document.getElementById("statusMessage");
 const floatingArea = document.getElementById("floatingArea");
 const totalCountEl = document.getElementById("totalKrathongCount");
 const wishesListContainer = document.getElementById("wishesListContainer");
+const bgMusic = document.getElementById("bgMusic");
+const toggleMusicBtn = document.getElementById("toggleMusicBtn");
 
 let selectedKrathong = "1.png";
+
+// ควบคุมเสียงเพลง
+if (toggleMusicBtn && bgMusic) {
+  let isPlaying = false;
+  toggleMusicBtn.addEventListener("click", () => {
+    if (!isPlaying) {
+      bgMusic.play().then(() => {
+        isPlaying = true;
+        toggleMusicBtn.textContent = "🔊 ปิดเพลงเทศกาล";
+      }).catch(e => console.log("Audio play blocked:", e));
+    } else {
+      bgMusic.pause();
+      isPlaying = false;
+      toggleMusicBtn.textContent = "🎵 เปิดเพลงเทศกาล";
+    }
+  });
+}
 
 // เปิด/ปิด ฟอร์มลอยกระทง
 if (showFormBtn && formContainer) {
@@ -63,15 +81,9 @@ function validateForm() {
 userNameInput.addEventListener("input", validateForm);
 wishInput.addEventListener("input", validateForm);
 
-// เชื่อมต่อระบบ Firebase แบบไม่ระบุตัวตน (Anonymous Auth)
-auth.signInAnonymously().then(() => {
-  statusMessage.textContent = "พร้อมลอยกระทงแล้ว";
-  btnFloat.innerHTML = "✦ ลอยกระทงทันที";
-  validateForm();
-}).catch(err => {
-  console.error("Auth error:", err);
-  statusMessage.textContent = "เชื่อมต่อระบบล้มเหลว กรุณารีเฟรชใหม่";
-});
+statusMessage.textContent = "พร้อมลอยกระทงแล้ว";
+btnFloat.innerHTML = "✦ ลอยกระทงทันที";
+validateForm();
 
 // อัปเดตรายการคำอธิษฐานและยอดรวมใน Sidebar แบบ Real-time
 db.ref("krathongs").on("value", snapshot => {
@@ -100,30 +112,42 @@ db.ref("krathongs").on("value", snapshot => {
   });
 });
 
-// ป้องกัน HTML Injection เพื่อความปลอดภัย
+// ป้องกัน HTML Injection
 function escapeHTML(str) {
   return str.replace(/[&<>'"]/g, 
     tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
   );
 }
 
-// สร้างกระทงจริงบนแม่น้ำโดยไม่รบกวนกระทงอื่นเมื่อมีข้อมูลใหม่เข้ามา
-db.ref("krathongs").limitToLast(40).on("child_added", snapshot => {
+// สร้างกระทงและให้ลอยวนต่อเนื่องไม่รู้จบโดยใช้กล่องห่อหุ้ม .krathong-content
+db.ref("krathongs").limitToLast(25).on("child_added", snapshot => {
   const item = snapshot.val();
+  const key = snapshot.key;
   if (item) {
-    spawnRealKrathong(item);
+    spawnRealKrathong(item, key);
   }
 });
 
-function spawnRealKrathong(item) {
+function spawnRealKrathong(item, key) {
+  const floatingAreaEl = document.getElementById("floatingArea");
+  if (!floatingAreaEl) return;
+
   const node = document.createElement("div");
-  node.className = "krathong user-krathong";
+  node.className = "krathong-item";
   
   const inner = document.createElement("div");
-  inner.className = "krathong-inner";
+  inner.className = "krathong-content";
 
   const img = document.createElement("img");
-  img.src = item.krathong || "1.png";
+  
+  // สุ่มรูปกระทงสำหรับข้อมูลเก่าที่ไม่มีรูป
+  if (!item.krathong) {
+    const defaultImages = ["1.png", "2.png", "3.png", "4.png", "5.png"];
+    const charCode = key ? key.charCodeAt(key.length - 1) : 0;
+    img.src = defaultImages[charCode % defaultImages.length];
+  } else {
+    img.src = item.krathong;
+  }
   img.alt = "กระทง";
 
   const wishDiv = document.createElement("div");
@@ -132,30 +156,18 @@ function spawnRealKrathong(item) {
 
   inner.append(img, wishDiv);
   node.appendChild(inner);
-  
-  const floatingAreaEl = document.getElementById("floatingArea");
-  if (!floatingAreaEl) return;
   floatingAreaEl.appendChild(node);
 
-  const width = floatingAreaEl.clientWidth || window.innerWidth;
   const height = floatingAreaEl.clientHeight || 450;
-  
-  const bottomPos = Math.random() * (height * 0.7);
+  const bottomPos = Math.random() * (height * 0.6) + 10;
   node.style.bottom = `${bottomPos}px`;
   
-  const duration = 26000 + Math.random() * 8000;
-  node.style.left = "-200px";
-  node.style.transition = `transform ${duration}ms linear`;
+  // ตั้งค่าความเร็วและจุดเริ่มต้นสุ่มเพื่อไม่ให้กองรวมกันและลอยวนซ้ำได้ตลอดเวลา
+  const duration = 26000 + Math.random() * 9000;
+  const delay = -Math.random() * duration;
 
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      node.style.transform = `translateX(${width + 400}px)`;
-    });
-  });
-
-  setTimeout(() => {
-    node.remove();
-  }, duration + 500);
+  node.style.animationDuration = `${duration}ms`;
+  node.style.animationDelay = `${delay}ms`;
 }
 
 // กดปุ่มส่งกระทง

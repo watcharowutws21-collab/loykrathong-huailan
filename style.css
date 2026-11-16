@@ -8,7 +8,7 @@
 
 body {
   font-family: 'Prompt', sans-serif;
-  background: linear-gradient(180deg, #050b14 0%, #0a172e 30%, #071224 70%, #040810 100%);
+  background: #03050c;
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
@@ -17,48 +17,111 @@ body {
   flex-direction: column;
 }
 
-/* ฉากหลังท้องฟ้า พระจันทร์ และโคมลอย */
+/* ฉากหลังท้องฟ้าแบบค่ำคืนไล่เฉดสีม่วงอมน้ำเงิน พระจันทร์ และเมฆ */
 .sky-background {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(180deg, #070b19 0%, #101532 30%, #1e1338 60%, #0c0818 100%);
   pointer-events: none;
-  z-index: -2;
+  z-index: 0;
 }
 
 .big-moon {
   position: absolute;
-  top: 30px; right: 70px;
-  width: 100px; height: 100px;
-  background: radial-gradient(circle, #fffdfa 0%, #fcebbf 65%, #dfb458 100%);
+  top: 30px; right: 50%; transform: translateX(120px);
+  width: 95px; height: 95px;
+  background: radial-gradient(circle, #fffdfa 0%, #fcebbf 55%, #dfb458 100%);
   border-radius: 50%;
-  box-shadow: 0 0 50px rgba(252, 235, 191, 0.5), 0 0 100px rgba(223, 180, 88, 0.25);
+  box-shadow: 0 0 70px rgba(252, 235, 191, 0.7), 0 0 140px rgba(223, 180, 88, 0.35);
+  z-index: 1;
 }
 
+/* เมฆลอยผ่านพระจันทร์และท้องฟ้า */
+.clouds {
+  position: absolute;
+  background: rgba(40, 30, 60, 0.35);
+  border-radius: 100px;
+  filter: blur(15px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cloud-1 {
+  top: 15px; right: 5%;
+  width: 350px; height: 90px;
+  animation: cloudMove 45s linear infinite;
+}
+
+.cloud-2 {
+  top: 45px; left: 5%;
+  width: 400px; height: 110px;
+  animation: cloudMoveRev 60s linear infinite;
+}
+
+@keyframes cloudMove {
+  0% { transform: translateX(50px); opacity: 0.6; }
+  50% { transform: translateX(-100px); opacity: 0.9; }
+  100% { transform: translateX(50px); opacity: 0.6; }
+}
+
+@keyframes cloudMoveRev {
+  0% { transform: translateX(-50px); opacity: 0.5; }
+  50% { transform: translateX(120px); opacity: 0.8; }
+  100% { transform: translateX(-50px); opacity: 0.5; }
+}
+
+/* โคมลอยบนท้องฟ้า */
 .floating-lanterns {
   position: absolute;
   width: 100%; height: 100%;
   pointer-events: none;
+  z-index: 2;
 }
 
 .lantern-item {
   position: absolute;
   background: radial-gradient(circle, #ffdb70 0%, #e06d28 100%);
   border-radius: 50% 50% 40% 40%;
-  box-shadow: 0 0 15px rgba(255, 170, 50, 0.6);
-  opacity: 0.6;
+  box-shadow: 0 0 20px rgba(255, 170, 50, 0.8);
+  opacity: 0.75;
   animation: floatUpLanterns 18s linear infinite;
 }
 
-.lantern-item.l1 { width: 14px; height: 20px; left: 15%; bottom: -30px; animation-duration: 16s; animation-delay: 0s; }
-.lantern-item.l2 { width: 10px; height: 15px; left: 40%; bottom: -30px; animation-duration: 22s; animation-delay: 4s; }
-.lantern-item.l3 { width: 18px; height: 25px; left: 75%; bottom: -30px; animation-duration: 19s; animation-delay: 2s; }
-.lantern-item.l4 { width: 12px; height: 18px; left: 90%; bottom: -30px; animation-duration: 25s; animation-delay: 7s; }
+.lantern-item.l1 { width: 16px; height: 22px; left: 15%; bottom: -40px; animation-duration: 16s; animation-delay: 0s; }
+.lantern-item.l2 { width: 12px; height: 18px; left: 35%; bottom: -40px; animation-duration: 22s; animation-delay: 3s; }
+.lantern-item.l3 { width: 20px; height: 28px; left: 65%; bottom: -40px; animation-duration: 19s; animation-delay: 1.5s; }
+.lantern-item.l4 { width: 14px; height: 20px; left: 85%; bottom: -40px; animation-duration: 25s; animation-delay: 5s; }
+.lantern-item.l5 { width: 15px; height: 21px; left: 50%; bottom: -40px; animation-duration: 20s; animation-delay: 7s; }
 
 @keyframes floatUpLanterns {
   0% { transform: translateY(0) translateX(0); opacity: 0; }
-  20% { opacity: 0.7; }
-  80% { opacity: 0.7; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.8; }
   100% { transform: translateY(-110vh) translateX(40px); opacity: 0; }
+}
+
+/* เงาสถาปัตยกรรมวัดไทยและพระพุทธรูปอยู่ที่ขอบฟ้าด้านบน (Horizon) เหนือพื้นที่แม่น้ำ */
+.temple-silhouette {
+  position: absolute;
+  top: 240px; /* วางไว้ที่เส้นขอบฟ้าด้านบน */
+  left: 0;
+  width: 100%;
+  height: 150px;
+  pointer-events: none;
+  z-index: 3;
+  opacity: 0.95;
+}
+
+.temple-silhouette svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* เลเยอร์หลักทั้งหมดให้อยู่เหนือฉากหลัง */
+.topbar, .page, footer {
+  position: relative;
+  z-index: 10;
 }
 
 .topbar {
@@ -71,11 +134,22 @@ body {
   backdrop-filter: blur(10px);
   position: sticky;
   top: 0;
-  z-index: 100;
 }
 
 .brand { display: flex; align-items: center; gap: 12px; }
-.school-logo { width: 40px; height: 40px; object-fit: cover; }
+
+/* โลโก้คมชัด เด่นชัดบนพื้นหลังมืด */
+.school-logo { 
+  width: 44px; 
+  height: 44px; 
+  object-fit: contain;          
+  border-radius: 50%; 
+  background: rgba(255, 255, 255, 0.95); 
+  padding: 3px;                          
+  border: 1.5px solid var(--accent-gold); 
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5); 
+}
+
 .brand-eyebrow { display: block; font-size: 0.7rem; color: #a0aec0; }
 .brand strong { font-size: 0.95rem; color: var(--accent-gold); }
 
@@ -149,8 +223,14 @@ body {
   gap: 10px;
 }
 
+/* ควบคุมขนาดรูปกระทงในฟอร์มเลือก */
 .choices img {
-  width: 100%; aspect-ratio: 1; object-fit: contain;
+  width: 100%; 
+  max-width: 80px;
+  height: 80px; 
+  aspect-ratio: 1; 
+  object-fit: contain;
+  margin: 0 auto;
   background: rgba(255, 255, 255, 0.05);
   border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px; padding: 6px; cursor: pointer;
@@ -202,7 +282,6 @@ body {
   margin-bottom: 10px;
 }
 
-/* เลย์เอาต์หลัก: เว้นพื้นที่ด้านขวาให้กล่องคำอธิษฐาน */
 .content-layout {
   position: relative;
   width: 100%;
@@ -210,6 +289,7 @@ body {
   flex-direction: column;
   flex: 1;
   padding-right: 330px;
+  margin-top: 20px;
 }
 
 .river-wrapper {
@@ -219,21 +299,30 @@ body {
   flex: 1;
 }
 
-/* พื้นที่แม่น้ำ */
 #floatingArea {
   position: relative;
   width: 100%;
   flex: 1;
   min-height: 450px;
   background: transparent;
-  border: none;
   overflow: hidden;
+}
+
+/* แสงสะท้อนบนผิวน้ำตรงกลาง */
+.river-reflection-path {
+  position: absolute;
+  top: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 250px; height: 100%;
+  background: radial-gradient(ellipse at top, rgba(248, 216, 137, 0.22) 0%, rgba(212, 175, 55, 0.08) 50%, transparent 80%);
+  pointer-events: none;
+  filter: blur(10px);
 }
 
 .river-waves {
   position: absolute;
   top: 0; left: 0; width: 200%; height: 100%;
-  background: repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(255,255,255,0.012) 35px, rgba(255,255,255,0.012) 70px);
+  background: repeating-linear-gradient(0deg, transparent, transparent 35px, rgba(255,255,255,0.015) 35px, rgba(255,255,255,0.015) 70px);
   animation: waveMove 14s linear infinite;
   pointer-events: none;
 }
@@ -243,7 +332,6 @@ body {
   100% { transform: translateY(70px); }
 }
 
-/* กล่องคำอธิษฐานด้านขวาสุด แบบลอยตัว */
 .wishes-panel {
   position: absolute;
   right: 0px;
@@ -324,30 +412,26 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* กระทง (ขนาดใหญ่ขึ้น 130px) */
-.krathong {
+/* โครงสร้างกระทงหลักและการลอยวน */
+.krathong-item {
   position: absolute;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   will-change: transform;
-  animation: floatLoop 22s linear infinite;
+  animation-name: floatLoop;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
-.krathong.recent {
-  filter: drop-shadow(0 0 20px rgba(248, 216, 137, 0.95));
-  transform: scale(1.25);
-  z-index: 10;
-}
-
-.krathong-inner {
+.krathong-content {
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 4px;
 }
 
-.krathong img {
-  width: 130px; height: 130px; object-fit: contain;
+.krathong-content img {
+  width: 130px; 
+  height: 130px; 
+  object-fit: contain;
   filter: drop-shadow(0 8px 14px rgba(0,0,0,0.75));
   animation: bobbing 3s ease-in-out infinite;
 }
@@ -355,21 +439,26 @@ body {
 .wishText {
   background: rgba(13, 25, 48, 0.95);
   border: 1px solid rgba(248, 216, 137, 0.5);
-  color: #fff; padding: 6px 14px; border-radius: 14px;
-  font-size: 0.85rem; white-space: nowrap; margin-top: 6px;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.7);
-  max-width: 220px; overflow: hidden; text-overflow: ellipsis;
+  color: #fff; 
+  padding: 5px 10px; 
+  border-radius: 12px;
+  font-size: 0.75rem; 
+  white-space: normal;          
+  word-break: break-word;       
+  text-align: center;           
+  box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+  max-width: 200px;             
   font-weight: 500;
 }
 
 @keyframes bobbing {
   0%, 100% { transform: translateY(0) rotate(-2deg); }
-  50% { transform: translateY(-8px) rotate(2deg); }
+  50% { transform: translateY(-6px) rotate(2deg); }
 }
 
 @keyframes floatLoop {
-  0% { transform: translateX(-220px); }
-  100% { transform: translateX(calc(100vw - 350px)); }
+  0% { transform: translateX(-180px); }
+  100% { transform: translateX(calc(100vw + 180px)); }
 }
 
 footer {
@@ -380,7 +469,6 @@ footer {
   padding-bottom: 10px;
 }
 
-/* Responsive สำหรับมือถือ */
 @media (max-width: 900px) {
   .content-layout {
     padding-right: 0;
@@ -395,9 +483,5 @@ footer {
   }
   #floatingArea {
     min-height: 320px;
-  }
-  @keyframes floatLoop {
-    0% { transform: translateX(-220px); }
-    100% { transform: translateX(calc(100vw + 220px)); }
   }
 }
