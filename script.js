@@ -1,252 +1,183 @@
-"use strict";
-
+// Firebase Configuration & Main Logic
 const firebaseConfig = {
-  apiKey: "AIzaSyCQj002kkZW-NcJBNYxcWdEnujY9tRqDow",
-  authDomain: "loykrathong-74274.firebaseapp.com",
-  databaseURL: "https://loykrathong-74274-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "loykrathong-74274",
-  storageBucket: "loykrathong-74274.firebasestorage.app",
-  messagingSenderId: "215445659075",
-  appId: "1:215445659075:web:47c8c41294558a140df176",
-  measurementId: "G-LQ5MXEY63N"
+  databaseURL: "https://loykrathong-74274-default-rtdb.asia-southeast1.firebasedatabase.app/"
 };
 
-const ALLOWED_IMAGES = new Set(["1.png", "2.png", "3.png", "4.png", "5.png"]);
-const COOLDOWN_MS = 3_000;
-const MAX_WISH_LENGTH = 100;
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const auth = firebase.auth();
+const db = firebase.database();
 
-const btnFloat = document.getElementById("btnFloat");
+const showFormBtn = document.getElementById("showFormBtn");
+const formContainer = document.getElementById("formContainer");
+const choicesImg = document.querySelectorAll("#krathongChoices img");
 const userNameInput = document.getElementById("userNameInput");
 const wishInput = document.getElementById("wishInput");
-const floatingArea = document.getElementById("floatingArea");
+const charCount = document.getElementById("charCount");
+const btnFloat = document.getElementById("btnFloat");
 const statusMessage = document.getElementById("statusMessage");
-const totalCountElement = document.getElementById("totalKrathongCount");
-const formContainer = document.getElementById("formContainer");
-const showFormBtn = document.getElementById("showFormBtn");
+const floatingArea = document.getElementById("floatingArea");
+const totalCountEl = document.getElementById("totalKrathongCount");
 const wishesListContainer = document.getElementById("wishesListContainer");
-const choices = [...document.querySelectorAll("#krathongChoices img")];
 
 let selectedKrathong = "1.png";
-let currentUser = null;
-let pending = false;
-let lastSuccessAt = 0;
-let databaseReady = false;
-let krathongQuery = null;
-const activeElements = new Map();
-let allWishesData = [];
 
-function status(text) { statusMessage.textContent = text; }
-
-function updateButton() {
-  const seconds = Math.ceil(Math.max(0, COOLDOWN_MS - (Date.now() - lastSuccessAt)) / 1000);
-  btnFloat.disabled = !currentUser || !databaseReady || pending || seconds > 0;
-  btnFloat.textContent = pending ? "กำลังส่งกระทง..." : seconds > 0 ? `รอ ${seconds} วินาที` : "ลอยกระทง";
-}
-
-function selectImage(choice) {
-  const value = choice.dataset.src;
-  if (!ALLOWED_IMAGES.has(value)) return;
-  selectedKrathong = value;
-  choices.forEach(c => {
-    const selected = c === choice;
-    c.classList.toggle("selected", selected);
-    c.setAttribute("aria-pressed", String(selected));
+// Toggle form display
+if (showFormBtn && formContainer) {
+  showFormBtn.addEventListener("click", () => {
+    formContainer.classList.toggle("hidden");
+    if (!formContainer.classList.contains("hidden")) {
+      formContainer.scrollIntoView({ behavior: 'smooth' });
+    }
   });
 }
 
-choices.forEach(choice => {
-  choice.addEventListener("click", () => selectImage(choice));
-  choice.addEventListener("keydown", event => {
-    if (event.key === "Enter" || event.key === " ") {
-      event.preventDefault();
-      selectImage(choice);
-    }
+// Choice selection
+choicesImg.forEach(img => {
+  img.addEventListener("click", () => {
+    choicesImg.forEach(i => {
+      i.classList.remove("selected");
+      i.setAttribute("aria-pressed", "false");
+    });
+    img.classList.add("selected");
+    img.setAttribute("aria-pressed", "true");
+    selectedKrathong = img.getAttribute("data-src");
   });
 });
 
-function removeKrathong(key) {
-  const existing = activeElements.get(key);
-  if (!existing) return;
-  existing.element.remove();
-  activeElements.delete(key);
-}
-
-function renderKrathong(key, data, isLatest = false) {
-  if (!data || !ALLOWED_IMAGES.has(data.img) || typeof data.wish !== "string" ||
-      data.wish.length < 1 || data.wish.length > MAX_WISH_LENGTH) return;
-  
-  removeKrathong(key);
-
-  const krathong = document.createElement("div");
-  krathong.className = `krathong ${isLatest ? 'recent' : ''}`;
-  
-  const inner = document.createElement("div");
-  inner.className = "krathong-inner";
-  
-  const img = document.createElement("img");
-  img.src = data.img; 
-  img.alt = "กระทง";
-  
-  const wish = document.createElement("div");
-  wish.className = "wishText";
-  wish.textContent = `${data.name || 'ชาวห้วยลาน'}: ${data.wish}`; 
-
-  inner.append(img, wish);
-  krathong.appendChild(inner);
-  floatingArea.appendChild(krathong);
-
-  const duration = 18_000 + Math.random() * 6_000;
-  const topPos = Math.random() * Math.max(20, floatingArea.clientHeight - 90);
-  krathong.style.top = `${topPos}px`;
-  krathong.style.animation = `floatLoop ${duration}ms linear infinite`;
-  
-  if (isLatest) {
-    krathong.style.animationDelay = "0s";
+// Char count & validation
+function validateForm() {
+  const nameVal = userNameInput.value.trim();
+  const wishVal = wishInput.value.trim();
+  charCount.textContent = `${wishVal.length}/100`;
+  if (nameVal.length > 0 && wishVal.length > 0) {
+    btnFloat.removeAttribute("disabled");
+    btnFloat.innerHTML = "✦ ลอยกระทงทันที";
   } else {
-    krathong.style.animationDelay = `-${Math.random() * duration}ms`;
+    btnFloat.setAttribute("disabled", "true");
+    btnFloat.innerHTML = "✦ กรุณากรอกชื่อและคำอธิษฐาน";
   }
-
-  activeElements.set(key, { element: krathong });
 }
 
-function listenForKrathongs(db) {
-  krathongQuery = db.ref("krathongs").orderByChild("time").limitToLast(50);
-  
-  krathongQuery.on("child_added", snap => {
-    const val = snap.val();
-    renderKrathong(snap.key, val);
-    if (val && val.wish) {
-      allWishesData.unshift(val);
-      updateWishesPanel();
-    }
-  }, err => status(`อ่านข้อมูลไม่ได้: ${err.message}`));
+userNameInput.addEventListener("input", validateForm);
+wishInput.addEventListener("input", validateForm);
 
-  krathongQuery.on("child_changed", snap => renderKrathong(snap.key, snap.val()));
-  krathongQuery.on("child_removed", snap => removeKrathong(snap.key));
+// Anonymous Auth & Realtime Sync
+auth.signInAnonymously().then(() => {
+  statusMessage.textContent = "พร้อมลอยกระทงแล้ว";
+  btnFloat.innerHTML = "✦ ลอยกระทงทันที";
+  validateForm();
+}).catch(err => {
+  console.error(err);
+  statusMessage.textContent = "เชื่อมต่อล้มเหลว กรุณารีเฟรชใหม่";
+});
 
-  db.ref("krathongs").on("value", snapshot => {
-    if (snapshot.exists()) {
-      totalCountElement.textContent = snapshot.numChildren().toLocaleString();
-    } else {
-      totalCountElement.textContent = "0";
-    }
-  });
-}
+// Fetch all krathongs in real-time
+db.ref("krathongs").on("value", snapshot => {
+  const data = snapshot.val();
+  floatingArea.innerHTML = '<div class="river-waves"></div>';
+  wishesListContainer.innerHTML = '';
 
-function updateWishesPanel() {
-  wishesListContainer.innerHTML = "";
-  if (allWishesData.length === 0) {
-    wishesListContainer.innerHTML = `<div class="wish-item-placeholder">ยังไม่มีคำอธิษฐาน</div>`;
+  if (!data) {
+    totalCountEl.textContent = "0";
+    wishesListContainer.innerHTML = '<div class="wish-item-placeholder">ยังไม่มีคำอธิษฐาน เริ่มลอยกระทงกันเลย!</div>';
     return;
   }
 
-  allWishesData.slice(0, 30).forEach(item => {
+  const keys = Object.keys(data);
+  totalCountEl.textContent = keys.length;
+
+  // Render sidebar wishes (latest first)
+  const sortedKeys = keys.reverse();
+  sortedKeys.forEach(key => {
+    const item = data[key];
     const card = document.createElement("div");
     card.className = "wish-card-item";
     card.innerHTML = `
-      <div class="wish-card-name">🪷 ${item.name || 'ชาวห้วยลาน'}</div>
-      <div class="wish-card-text">${item.wish}</div>
+      <div class="wish-card-name">🪷 ${escapeHTML(item.name || 'ไม่ระบุชื่อ')}</div>
+      <div class="wish-card-text">"${escapeHTML(item.wish || '')}"</div>
     `;
     wishesListContainer.appendChild(card);
+
+    // Render floating krathong on river
+    spawnRealKrathong(key, item);
   });
-}
-
-async function floatKrathong(db) {
-  if (pending || !currentUser || !databaseReady) return;
-  const name = userNameInput.value.trim() || "ชาวห้วยลาน";
-  const wish = wishInput.value.trim();
-
-  if (!wish || wish.length > MAX_WISH_LENGTH) {
-    status("กรุณาเขียนคำอธิษฐาน 1–100 ตัวอักษร");
-    return;
-  }
-  if (Date.now() - lastSuccessAt < COOLDOWN_MS) {
-    status("กรุณารอสักครู่ก่อนลอยกระทงอีกครั้ง");
-    return;
-  }
-
-  pending = true;
-  updateButton();
-  try {
-    const newRef = db.ref("krathongs").push();
-    const newData = {
-      name: name,
-      img: selectedKrathong,
-      wish: wish,
-      time: firebase.database.ServerValue.TIMESTAMP
-    };
-    await newRef.set(newData);
-    
-    renderKrathong(newRef.key, { ...newData, time: Date.now() }, true);
-
-    lastSuccessAt = Date.now();
-    wishInput.value = "";
-    userNameInput.value = "";
-    status("ลอยกระทงสำเร็จ ขอคำอธิษฐานเป็นจริง 🌕");
-
-    formContainer.classList.add("hidden");
-    showFormBtn.style.display = "block";
-
-  } catch (err) {
-    console.error("Firebase write failed:", err);
-    status("ส่งกระทงไม่สำเร็จ กรุณาตรวจสอบอินเทอร์เน็ตและลองอีกครั้ง");
-  } finally {
-    pending = false;
-    updateButton();
-  }
-}
-
-showFormBtn.addEventListener("click", () => {
-  formContainer.classList.remove("hidden");
-  showFormBtn.style.display = "none";
-  status("");
 });
 
-async function main() {
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
-  const auth = firebase.auth();
-  const db = firebase.database();
+function escapeHTML(str) {
+  return str.replace(/[&<>'"]/g, 
+    tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+  );
+}
+
+function spawnRealKrathong(key, item) {
+  const node = document.createElement("div");
+  node.className = "krathong user-krathong";
   
-  db.ref(".info/connected").on("value", snap => {
-    databaseReady = snap.val() === true;
-    if (!databaseReady) status("กำลังเชื่อมต่อฐานข้อมูล...");
-    else if (currentUser) status("พร้อมลอยกระทง 🌕");
-    updateButton();
+  const inner = document.createElement("div");
+  inner.className = "krathong-inner";
+
+  const img = document.createElement("img");
+  img.src = item.krathong || "1.png";
+  img.alt = "กระทง";
+
+  const wishDiv = document.createElement("div");
+  wishDiv.className = "wishText";
+  wishDiv.textContent = `${item.name || 'นิรนาม'}: ${item.wish || ''}`;
+
+  inner.append(img, wishDiv);
+  node.appendChild(inner);
+  floatingArea.appendChild(node);
+
+  const width = floatingArea.clientWidth || window.innerWidth;
+  const height = floatingArea.clientHeight || 450;
+  
+  // Random vertical position
+  const bottomPos = Math.random() * (height * 0.75);
+  node.style.bottom = `${bottomPos}px`;
+  
+  // Floating animation across screen
+  const duration = 24000 + Math.random() * 8000;
+  node.style.left = "-200px";
+  node.style.transition = `transform ${duration}ms linear`;
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      node.style.transform = `translateX(${width + 400}px)`;
+    });
   });
 
-  auth.onAuthStateChanged(async user => {
-    if (user) {
-      currentUser = user;
-      status("เชื่อมต่อสำเร็จ พร้อมลอยกระทง");
-      if (!krathongQuery) listenForKrathongs(db);
-      updateButton();
-    } else {
-      currentUser = null;
-      if (krathongQuery) {
-        krathongQuery.off();
-        krathongQuery = null;
-      }
-      activeElements.forEach((_, key) => removeKrathong(key));
-      updateButton();
-      try { await auth.signInAnonymously(); }
-      catch (err) { console.error(err); status(`เข้าสู่ระบบไม่สำเร็จ: ${err.message}`); }
-    }
-  });
-
-  btnFloat.addEventListener("click", () => floatKrathong(db));
-  wishInput.addEventListener("keydown", event => {
-    if (event.key === "Enter") floatKrathong(db);
-  });
-  setInterval(updateButton, 1000);
+  setTimeout(() => {
+    node.remove();
+  }, duration + 500);
 }
 
-main().catch(err => { console.error(err); status(`เริ่มระบบไม่สำเร็จ: ${err.message}`); });
+// Submit new krathong
+btnFloat.addEventListener("click", () => {
+  const nameVal = userNameInput.value.trim();
+  const wishVal = wishInput.value.trim();
+  if (!nameVal || !wishVal) return;
 
-const charCount = document.getElementById("charCount");
-if (charCount && wishInput) {
-  const refreshCount = () => { charCount.textContent = `${wishInput.value.length}/100`; };
-  wishInput.addEventListener("input", refreshCount);
-  refreshCount();
-}
+  btnFloat.setAttribute("disabled", "true");
+  statusMessage.textContent = "กำลังส่งกระทงลงสู่น้ำ...";
+
+  const newRef = db.ref("krathongs").push();
+  newRef.set({
+    name: nameVal,
+    wish: wishVal,
+    krathong: selectedKrathong,
+    timestamp: firebase.database.ServerValue.TIMESTAMP
+  }).then(() => {
+    statusMessage.textContent = "🪷 ลอยกระทงสำเร็จแล้ว!";
+    userNameInput.value = "";
+    wishInput.value = "";
+    validateForm();
+    formContainer.classList.add("hidden");
+    setTimeout(() => { statusMessage.textContent = ""; }, 4000);
+  }).catch(err => {
+    console.error(err);
+    statusMessage.textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่";
+    btnFloat.removeAttribute("disabled");
+  });
+});

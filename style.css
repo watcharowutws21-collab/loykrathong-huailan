@@ -202,31 +202,24 @@ body {
   margin-bottom: 10px;
 }
 
-/* เลย์เอาต์หลัก: ขยายพื้นที่ลอยให้กว้างเต็มตา */
+/* เลย์เอาต์หลัก: เว้นพื้นที่ด้านขวาให้กล่องคำอธิษฐาน */
 .content-layout {
-  display: flex;
-  gap: 20px;
+  position: relative;
   width: 100%;
-  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  padding-right: 330px;
 }
 
 .river-wrapper {
-  flex: 1;
-  min-width: 0;
+  width: 100%;
   display: flex;
   flex-direction: column;
+  flex: 1;
 }
 
-.river-title {
-  color: var(--accent-gold);
-  font-size: 0.95rem;
-  letter-spacing: 1px;
-  margin-bottom: 6px;
-  text-align: center;
-}
-
-/* ขยายความสูงและความกว้างของพื้นที่ลอยกระทงให้ใหญ่เต็มตา */
+/* พื้นที่แม่น้ำ */
 #floatingArea {
   position: relative;
   width: 100%;
@@ -250,19 +243,22 @@ body {
   100% { transform: translateY(70px); }
 }
 
-/* กล่องคำอธิษฐานด้านขวาสุด */
+/* กล่องคำอธิษฐานด้านขวาสุด แบบลอยตัว */
 .wishes-panel {
-  width: 320px;
-  background: rgba(13, 25, 48, 0.88);
-  border: 1px solid rgba(248, 216, 137, 0.3);
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  width: 310px;
+  background: rgba(13, 25, 48, 0.92);
+  border: 1px solid rgba(248, 216, 137, 0.35);
   border-radius: 16px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 10px 35px rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 10px 35px rgba(0,0,0,0.7);
   display: flex;
   flex-direction: column;
-  height: 480px;
+  height: 450px;
   overflow: hidden;
-  flex-shrink: 0;
+  z-index: 30;
 }
 
 .wishes-panel-header {
@@ -328,7 +324,7 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* เพิ่มขนาดกระทงและป้ายข้อความให้ใหญ่ขึ้นเด่นชัด */
+/* กระทง (ขนาดใหญ่ขึ้น 130px) */
 .krathong {
   position: absolute;
   display: flex;
@@ -351,7 +347,7 @@ body {
 }
 
 .krathong img {
-  width: 95px; height: 95px; object-fit: contain;
+  width: 130px; height: 130px; object-fit: contain;
   filter: drop-shadow(0 8px 14px rgba(0,0,0,0.75));
   animation: bobbing 3s ease-in-out infinite;
 }
@@ -373,7 +369,7 @@ body {
 
 @keyframes floatLoop {
   0% { transform: translateX(-220px); }
-  100% { transform: translateX(calc(100vw + 220px)); }
+  100% { transform: translateX(calc(100vw - 350px)); }
 }
 
 footer {
@@ -385,12 +381,23 @@ footer {
 }
 
 /* Responsive สำหรับมือถือ */
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .content-layout {
-    flex-direction: column;
+    padding-right: 0;
   }
   .wishes-panel {
+    position: relative;
+    right: auto;
+    top: auto;
     width: 100%;
-    height: 200px;
+    height: 180px;
+    margin-top: 15px;
+  }
+  #floatingArea {
+    min-height: 320px;
+  }
+  @keyframes floatLoop {
+    0% { transform: translateX(-220px); }
+    100% { transform: translateX(calc(100vw + 220px)); }
   }
 }

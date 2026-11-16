@@ -31,7 +31,7 @@
   active.add(node);
   const fromLeft=Math.random()<.5;
   const duration=rand(23000,33000);
-  const width=area.clientWidth;
+  const width=area.clientHeight ? area.clientWidth : window.innerWidth;
   node.style.bottom=`${rand(5,Math.max(7,area.clientHeight*.32))}px`;
   node.style.left=fromLeft?"-180px":`${width+180}px`;
   node.style.pointerEvents="none";
