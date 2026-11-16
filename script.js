@@ -13,7 +13,6 @@ const firebaseConfig = {
 
 const ALLOWED_IMAGES = new Set(["1.png", "2.png", "3.png", "4.png", "5.png"]);
 const COOLDOWN_MS = 3_000;
-const VISIBLE_MS = 120_000;
 const MAX_WISH_LENGTH = 100;
 
 const btnFloat = document.getElementById("btnFloat");
@@ -24,6 +23,7 @@ const statusMessage = document.getElementById("statusMessage");
 const totalCountElement = document.getElementById("totalKrathongCount");
 const formContainer = document.getElementById("formContainer");
 const showFormBtn = document.getElementById("showFormBtn");
+const wishesListContainer = document.getElementById("wishesListContainer");
 const choices = [...document.querySelectorAll("#krathongChoices img")];
 
 let selectedKrathong = "1.png";
@@ -33,6 +33,7 @@ let lastSuccessAt = 0;
 let databaseReady = false;
 let krathongQuery = null;
 const activeElements = new Map();
+let allWishesData = [];
 
 function status(text) { statusMessage.textContent = text; }
 
@@ -66,23 +67,18 @@ choices.forEach(choice => {
 function removeKrathong(key) {
   const existing = activeElements.get(key);
   if (!existing) return;
-  clearTimeout(existing.animationTimer);
-  clearTimeout(existing.expiryTimer);
   existing.element.remove();
   activeElements.delete(key);
 }
 
-function renderKrathong(key, data) {
+function renderKrathong(key, data, isLatest = false) {
   if (!data || !ALLOWED_IMAGES.has(data.img) || typeof data.wish !== "string" ||
-      data.wish.length < 1 || data.wish.length > MAX_WISH_LENGTH ||
-      typeof data.time !== "number" || !Number.isFinite(data.time)) return;
+      data.wish.length < 1 || data.wish.length > MAX_WISH_LENGTH) return;
   
   removeKrathong(key);
-  const age = Date.now() - data.time;
-  if (age > VISIBLE_MS || age < -60_000) return;
 
   const krathong = document.createElement("div");
-  krathong.className = "krathong";
+  krathong.className = `krathong ${isLatest ? 'recent' : ''}`;
   
   const inner = document.createElement("div");
   inner.className = "krathong-inner";
@@ -99,40 +95,59 @@ function renderKrathong(key, data) {
   krathong.appendChild(inner);
   floatingArea.appendChild(krathong);
 
-  const fromLeft = Math.random() < 0.5;
   const duration = 18_000 + Math.random() * 6_000;
-  const distance = window.innerWidth + 400;
+  const topPos = Math.random() * Math.max(20, floatingArea.clientHeight - 90);
+  krathong.style.top = `${topPos}px`;
+  krathong.style.animation = `floatLoop ${duration}ms linear infinite`;
+  
+  if (isLatest) {
+    krathong.style.animationDelay = "0s";
+  } else {
+    krathong.style.animationDelay = `-${Math.random() * duration}ms`;
+  }
 
-  krathong.style.bottom = `${Math.random() * (floatingArea.clientHeight - 80)}px`;
-  krathong.style.left = fromLeft ? "-150px" : `${window.innerWidth + 150}px`;
-  krathong.style.transition = `transform ${duration}ms linear`;
-
-  const animationTimer = setTimeout(() => {
-    krathong.style.transform = `translateX(${fromLeft ? distance : -distance}px)`;
-  }, 50);
-
-  const expiryTimer = setTimeout(() => removeKrathong(key), Math.min(duration + 100, Math.max(1000, VISIBLE_MS - age)));
-  activeElements.set(key, { element: krathong, animationTimer, expiryTimer });
+  activeElements.set(key, { element: krathong });
 }
 
 function listenForKrathongs(db) {
-  krathongQuery = db.ref("krathongs").orderByChild("time").limitToLast(100);
+  krathongQuery = db.ref("krathongs").orderByChild("time").limitToLast(50);
   
   krathongQuery.on("child_added", snap => {
-    renderKrathong(snap.key, snap.val());
+    const val = snap.val();
+    renderKrathong(snap.key, val);
+    if (val && val.wish) {
+      allWishesData.unshift(val);
+      updateWishesPanel();
+    }
   }, err => status(`อ่านข้อมูลไม่ได้: ${err.message}`));
 
   krathongQuery.on("child_changed", snap => renderKrathong(snap.key, snap.val()));
   krathongQuery.on("child_removed", snap => removeKrathong(snap.key));
 
-  // นับจำนวนคนลอยกระทงจากข้อมูลในดาต้าเบสแบบ Real-time
   db.ref("krathongs").on("value", snapshot => {
     if (snapshot.exists()) {
-      const count = snapshot.numChildren();
-      totalCountElement.textContent = count.toLocaleString();
+      totalCountElement.textContent = snapshot.numChildren().toLocaleString();
     } else {
       totalCountElement.textContent = "0";
     }
+  });
+}
+
+function updateWishesPanel() {
+  wishesListContainer.innerHTML = "";
+  if (allWishesData.length === 0) {
+    wishesListContainer.innerHTML = `<div class="wish-item-placeholder">ยังไม่มีคำอธิษฐาน</div>`;
+    return;
+  }
+
+  allWishesData.slice(0, 30).forEach(item => {
+    const card = document.createElement("div");
+    card.className = "wish-card-item";
+    card.innerHTML = `
+      <div class="wish-card-name">🪷 ${item.name || 'ชาวห้วยลาน'}</div>
+      <div class="wish-card-text">${item.wish}</div>
+    `;
+    wishesListContainer.appendChild(card);
   });
 }
 
@@ -154,18 +169,21 @@ async function floatKrathong(db) {
   updateButton();
   try {
     const newRef = db.ref("krathongs").push();
-    await newRef.set({
+    const newData = {
       name: name,
       img: selectedKrathong,
       wish: wish,
       time: firebase.database.ServerValue.TIMESTAMP
-    });
+    };
+    await newRef.set(newData);
+    
+    renderKrathong(newRef.key, { ...newData, time: Date.now() }, true);
+
     lastSuccessAt = Date.now();
     wishInput.value = "";
     userNameInput.value = "";
     status("ลอยกระทงสำเร็จ ขอคำอธิษฐานเป็นจริง 🌕");
 
-    // ซ่อนกล่องฟอร์มเมื่อลอยเสร็จ และแสดงปุ่มลอยเพิ่ม
     formContainer.classList.add("hidden");
     showFormBtn.style.display = "block";
 

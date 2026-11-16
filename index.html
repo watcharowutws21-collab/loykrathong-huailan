@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#09172c">
+  <meta name="theme-color" content="#070e1b">
   <title>กิจกรรมสืบสานวัฒนธรรมไทย - เทศบาลตำบลห้วยลาน</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,8 +11,16 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="night-overlay" aria-hidden="true"></div>
-  <div class="stars" aria-hidden="true"></div>
+  <!-- ฉากหลังท้องฟ้า พระจันทร์ และโคมลอยขยับได้ -->
+  <div class="sky-background" aria-hidden="true">
+    <div class="big-moon"></div>
+    <div class="floating-lanterns">
+      <div class="lantern-item l1"></div>
+      <div class="lantern-item l2"></div>
+      <div class="lantern-item l3"></div>
+      <div class="lantern-item l4"></div>
+    </div>
+  </div>
 
   <!-- ส่วนหัวเว็บไซต์ -->
   <header class="topbar">
@@ -38,8 +46,10 @@
       <p>ส่งต่อคำอธิษฐานดี ๆ ให้ล่องลอยไปกับสายน้ำใต้แสงจันทร์</p>
     </section>
 
+    <!-- ปุ่มเปิดฟอร์ม -->
     <button id="showFormBtn" class="floating-toggle-btn" style="display: none;">🪷 ลอยกระทงเพิ่ม</button>
 
+    <!-- กล่องฟอร์มหลัก -->
     <section class="ui-container" id="formContainer" aria-label="สร้างกระทงของคุณ">
       <div class="panel-heading">
         <span class="step">01</span>
@@ -78,21 +88,38 @@
       <p class="privacy-note">✧ ไม่ต้องสมัครสมาชิก • กรุณาอย่าใส่ข้อมูลส่วนตัวในคำอธิษฐาน</p>
     </section>
 
-    <div class="river-title" aria-hidden="true"><span>✦</span> สายน้ำแห่งคำอธิษฐาน (แสดงกระทง Real-time) <span>✦</span></div>
-    
-    <div id="floatingArea" aria-label="กระทงที่กำลังลอย"></div>
+    <!-- เลย์เอาต์แม่น้ำและกล่องคำอธิษฐานด้านข้างแบบตรงเรฟ -->
+    <div class="content-layout">
+      <!-- พื้นที่แม่น้ำเต็มจอ -->
+      <div class="river-wrapper">
+        <div class="river-title" aria-hidden="true"><span>✦</span> สายน้ำแห่งคำอธิษฐาน (แสดงกระทง Real-time) <span>✦</span></div>
+        <div id="floatingArea" aria-label="กระทงที่กำลังลอย">
+          <div class="river-waves"></div>
+        </div>
+      </div>
+
+      <!-- กล่องคำอธิษฐานด้านข้าง -->
+      <aside class="wishes-panel" aria-label="กล่องคำอธิษฐานล่าสุด">
+        <div class="wishes-panel-header">
+          <span>📜 สำหรับแสดงคำอธิษฐาน</span>
+          <span class="live-indicator">LIVE</span>
+        </div>
+        <div id="wishesListContainer" class="wishes-list">
+          <div class="wish-item-placeholder">กำลังโหลดคำอธิษฐาน...</div>
+        </div>
+      </aside>
+    </div>
   </main>
 
-  <!-- ปุ่มควบคุมเปิด/ปิดเพลง (ใช้ไฟล์เสียง MP3 ตรงจากลิงก์สำรองที่รองรับการเล่นบนเว็บเบราว์เซอร์) -->
+  <!-- ควบคุมเสียงเพลง -->
   <div style="position:fixed; bottom:20px; right:20px; z-index:999;">
     <button id="audioToggleBtn" style="padding:10px 18px; border-radius:30px; border:1px solid #f8d889; background:rgba(16,44,88,0.95); color:#ffd700; font-family:'Prompt',sans-serif; font-weight:600; cursor:pointer; box-shadow:0 4px 20px rgba(0,0,0,0.6);">
       🎵 เปิดเพลงเทศกาล
     </button>
   </div>
 
-  <audio id="festivalAudio" loop>
-    <source src="https://actions.google.com/sounds/v1/ambiences/relaxing_waters.ogg" type="audio/ogg">
-    <source src="https://www.bensound.com/bensound-music/bensound-relaxing.mp3" type="audio/mpeg">
+  <audio id="festivalAudio" loop preload="auto">
+    <source src="song.mp3" type="audio/mpeg">
   </audio>
 
   <footer>กิจกรรมสืบสานวัฒนธรรมไทย เทศบาลตำบลห้วยลาน • ลอยกระทงอย่างสร้างสรรค์</footer>
@@ -108,19 +135,20 @@
     const audioEl = document.getElementById('festivalAudio');
     let isPlaying = false;
 
-    audioBtn.addEventListener('click', () => {
-      if (!isPlaying) {
-        audioEl.play().then(() => {
+    audioBtn.addEventListener('click', async () => {
+      try {
+        if (!isPlaying) {
+          await audioEl.play();
           isPlaying = true;
           audioBtn.textContent = "🔇 ปิดเสียงเพลง";
-        }).catch(err => {
-          console.error("Audio play error:", err);
-          alert("กรุณาคลิกที่หน้าจอก่อน 1 ครั้ง แล้วกดปุ่มเปิดเพลงอีกครั้งครับ");
-        });
-      } else {
-        audioEl.pause();
-        isPlaying = false;
-        audioBtn.textContent = "🎵 เปิดเพลงเทศกาล";
+        } else {
+          audioEl.pause();
+          isPlaying = false;
+          audioBtn.textContent = "🎵 เปิดเพลงเทศกาล";
+        }
+      } catch (err) {
+        console.error("Audio play error:", err);
+        alert("กรุณาคลิกที่หน้าจอเว็บไซต์ 1 ครั้ง แล้วกดปุ่มเปิดเพลงใหม่อีกครั้งครับ");
       }
     });
   </script>
