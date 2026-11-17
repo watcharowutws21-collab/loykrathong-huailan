@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>กิจกรรมสืบสานวัฒนธรรมไทย เทศบาลตำบลห้วยลาน</title>
+  <title>กิจกรรมสืบสานวัฒนธรรม เทศบาลตำบลห้วยลาน</title>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <!-- Firebase App & Realtime Database SDK -->
@@ -32,22 +32,25 @@
     </div>
   </div>
 
-  <!-- Topbar -->
+  <!-- Topbar ตามแบบร่างของคุณ -->
   <header class="topbar">
-    <div class="brand">
+    <!-- ซ้าย: โลโก้ + ชื่อหน่วยงาน -->
+    <div class="brand-section">
       <img src="logo.png" alt="Logo" class="school-logo">
-      <div>
-        <span class="brand-eyebrow">กิจกรรมสืบสานวัฒนธรรมไทย</span>
+      <div class="brand-text">
+        <span class="brand-eyebrow">กิจกรรมสืบสานวัฒนธรรม</span>
         <strong>เทศบาลตำบลห้วยลาน</strong>
       </div>
     </div>
-    <div class="festival-tag">
+
+    <!-- กลาง: ชื่องานเทศกาล -->
+    <div class="festival-title-badge">
       <span class="live-dot"></span> LOY KRATHONG FESTIVAL
     </div>
-    <div class="topbar-right" style="display: flex; align-items: center; gap: 10px;">
-      <div class="festival-tag" style="background: rgba(248, 216, 137, 0.15);">
-        🏮 ยอดผู้ลอยกระทง: <span id="totalKrathongCount" style="margin-left: 4px; font-weight: 700;">0</span> คน
-      </div>
+
+    <!-- ขวา: ยอดผู้ลอยกระทง -->
+    <div class="counter-badge">
+      🏮 ยอดผู้ลอยกระทง: <span id="totalKrathongCount">0</span> คน
     </div>
   </header>
 
@@ -72,7 +75,7 @@
         </div>
       </div>
 
-      <!-- ระบบสไลด์เลือกกระทงแบบทีละรูปขนาดใหญ่เต็มตา -->
+      <!-- ระบบสไลด์เลือกกระทง -->
       <div class="carousel-container">
         <button type="button" id="prevBtn" class="carousel-btn">❮</button>
         <div class="carousel-view">
@@ -134,8 +137,8 @@
 
   <!-- ควบคุมเสียงเพลง -->
   <audio id="bgMusic" src="song.mp3" loop></audio>
-  <div style="position: fixed; bottom: 15px; right: 20px; z-index: 100;">
-    <button id="toggleMusicBtn" style="background: rgba(13,25,48,0.9); border: 1px solid rgba(248,216,137,0.4); color: #f8d889; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-family: 'Prompt',sans-serif; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+  <div style="position: fixed; bottom: 12px; right: 20px; z-index: 100;">
+    <button id="toggleMusicBtn" style="background: rgba(13,25,48,0.9); border: 1px solid rgba(248,216,137,0.4); color: #f8d889; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-family: 'Prompt',sans-serif; font-size: 0.85rem; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
       🎵 เปิดเพลงเทศกาล
     </button>
   </div>
