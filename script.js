@@ -10,7 +10,6 @@ const db = firebase.database();
 
 const showFormBtn = document.getElementById("showFormBtn");
 const formContainer = document.getElementById("formContainer");
-const choicesImg = document.querySelectorAll("#krathongChoices img");
 const userNameInput = document.getElementById("userNameInput");
 const wishInput = document.getElementById("wishInput");
 const charCount = document.getElementById("charCount");
@@ -22,7 +21,30 @@ const wishesListContainer = document.getElementById("wishesListContainer");
 const bgMusic = document.getElementById("bgMusic");
 const toggleMusicBtn = document.getElementById("toggleMusicBtn");
 
-let selectedKrathong = "1.png";
+// 🪷 ตัวแปรระบบสไลด์เลือกกระทง
+const krathongImages = ["1.png", "2.png", "3.png", "4.png", "5.png"];
+let currentIndex = 0;
+const activeKrathongImg = document.getElementById("activeKrathongImg");
+const krathongIndicator = document.getElementById("krathongIndicator");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+function updateCarousel() {
+  activeKrathongImg.src = krathongImages[currentIndex];
+  krathongIndicator.textContent = `กระทงที่ ${currentIndex + 1} จาก ${krathongImages.length}`;
+}
+
+if (prevBtn && nextBtn) {
+  prevBtn.addEventListener("click", () => {
+    currentIndex = (currentIndex - 1 + krathongImages.length) % krathongImages.length;
+    updateCarousel();
+  });
+
+  nextBtn.addEventListener("click", () => {
+    currentIndex = (currentIndex + 1) % krathongImages.length;
+    updateCarousel();
+  });
+}
 
 // ควบคุมเสียงเพลง
 if (toggleMusicBtn && bgMusic) {
@@ -43,6 +65,7 @@ if (toggleMusicBtn && bgMusic) {
 
 // เปิด/ปิด ฟอร์มลอยกระทง
 if (showFormBtn && formContainer) {
+  formContainer.classList.add("hidden"); // ซ่อนไว้ตอนแรก
   showFormBtn.addEventListener("click", () => {
     formContainer.classList.toggle("hidden");
     if (!formContainer.classList.contains("hidden")) {
@@ -50,19 +73,6 @@ if (showFormBtn && formContainer) {
     }
   });
 }
-
-// เลือกรูปแบบกระทง
-choicesImg.forEach(img => {
-  img.addEventListener("click", () => {
-    choicesImg.forEach(i => {
-      i.classList.remove("selected");
-      i.setAttribute("aria-pressed", "false");
-    });
-    img.classList.add("selected");
-    img.setAttribute("aria-pressed", "true");
-    selectedKrathong = img.getAttribute("data-src");
-  });
-});
 
 // ตรวจสอบความถูกต้องของฟอร์ม
 function validateForm() {
@@ -78,12 +88,13 @@ function validateForm() {
   }
 }
 
-userNameInput.addEventListener("input", validateForm);
-wishInput.addEventListener("input", validateForm);
+if (userNameInput && wishInput) {
+  userNameInput.addEventListener("input", validateForm);
+  wishInput.addEventListener("input", validateForm);
+}
 
-statusMessage.textContent = "พร้อมลอยกระทงแล้ว";
-btnFloat.innerHTML = "✦ ลอยกระทงทันที";
 validateForm();
+updateCarousel();
 
 // อัปเดตรายการคำอธิษฐานและยอดรวมใน Sidebar แบบ Real-time
 db.ref("krathongs").on("value", snapshot => {
@@ -119,7 +130,7 @@ function escapeHTML(str) {
   );
 }
 
-// สร้างกระทงและควบคุมระยะใกล้-ไกล (Perspective 3D พร้อมปรับสเกลให้ใหญ่ขึ้นสมดุลกับขนาดใหม่)
+// สร้างกระทงและควบคุมระยะใกล้-ไกล (Perspective 3D)
 db.ref("krathongs").limitToLast(25).on("child_added", (snapshot, prevChildKey) => {
   const item = snapshot.val();
   const key = snapshot.key;
@@ -142,9 +153,7 @@ function spawnRealKrathong(item, key, isLatest) {
   const img = document.createElement("img");
   
   if (!item.krathong) {
-    const defaultImages = ["1.png", "2.png", "3.png", "4.png", "5.png"];
-    const charCode = key ? key.charCodeAt(key.length - 1) : 0;
-    img.src = defaultImages[charCode % defaultImages.length];
+    img.src = krathongImages[0];
   } else {
     img.src = item.krathong;
   }
@@ -181,30 +190,34 @@ function spawnRealKrathong(item, key, isLatest) {
 }
 
 // กดปุ่มส่งกระทง
-btnFloat.addEventListener("click", () => {
-  const nameVal = userNameInput.value.trim();
-  const wishVal = wishInput.value.trim();
-  if (!nameVal || !wishVal) return;
+if (btnFloat) {
+  btnFloat.addEventListener("click", () => {
+    const nameVal = userNameInput.value.trim();
+    const wishVal = wishInput.value.trim();
+    if (!nameVal || !wishVal) return;
 
-  btnFloat.setAttribute("disabled", "true");
-  statusMessage.textContent = "กำลังส่งกระทงลงสู่น้ำ...";
+    btnFloat.setAttribute("disabled", "true");
+    statusMessage.textContent = "กำลังส่งกระทงลงสู่น้ำ...";
 
-  const newRef = db.ref("krathongs").push();
-  newRef.set({
-    name: nameVal,
-    wish: wishVal,
-    krathong: selectedKrathong,
-    timestamp: firebase.database.ServerValue.TIMESTAMP
-  }).then(() => {
-    statusMessage.textContent = "🪷 ลอยกระทงสำเร็จแล้ว!";
-    userNameInput.value = "";
-    wishInput.value = "";
-    validateForm();
-    formContainer.classList.add("hidden");
-    setTimeout(() => { statusMessage.textContent = ""; }, 4000);
-  }).catch(err => {
-    console.error("Firebase write error:", err);
-    statusMessage.textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่";
-    btnFloat.removeAttribute("disabled");
+    const selectedKrathongFile = krathongImages[currentIndex];
+
+    const newRef = db.ref("krathongs").push();
+    newRef.set({
+      name: nameVal,
+      wish: wishVal,
+      krathong: selectedKrathongFile,
+      timestamp: firebase.database.ServerValue.TIMESTAMP
+    }).then(() => {
+      statusMessage.textContent = "🪷 ลอยกระทงสำเร็จแล้ว!";
+      userNameInput.value = "";
+      wishInput.value = "";
+      validateForm();
+      formContainer.classList.add("hidden");
+      setTimeout(() => { statusMessage.textContent = ""; }, 4000);
+    }).catch(err => {
+      console.error("Firebase write error:", err);
+      statusMessage.textContent = "เกิดข้อผิดพลาด กรุณาลองใหม่";
+      btnFloat.removeAttribute("disabled");
+    });
   });
-});
+}

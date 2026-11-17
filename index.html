@@ -68,16 +68,18 @@
         <div class="step">1</div>
         <div>
           <h2>เลือกลักษณะกระทง</h2>
-          <p>เลือกกระทงที่ท่านชื่นชอบสำหรับนำส่งลงสู่น้ำ</p>
+          <p>กดปุ่มลูกศรซ้าย-ขวา เพื่อเลือกรูปแบบกระทงที่ท่านชื่นชอบ</p>
         </div>
       </div>
 
-      <div class="choices" id="krathongChoices">
-        <img src="1.png" alt="กระทง 1" data-src="1.png" class="selected" aria-pressed="true">
-        <img src="2.png" alt="กระทง 2" data-src="2.png" aria-pressed="false">
-        <img src="3.png" alt="กระทง 3" data-src="3.png" aria-pressed="false">
-        <img src="4.png" alt="กระทง 4" data-src="4.png" aria-pressed="false">
-        <img src="5.png" alt="กระทง 5" data-src="5.png" aria-pressed="false">
+      <!-- ระบบสไลด์เลือกกระทงแบบทีละรูปขนาดใหญ่เต็มตา -->
+      <div class="carousel-container">
+        <button type="button" id="prevBtn" class="carousel-btn">❮</button>
+        <div class="carousel-view">
+          <img id="activeKrathongImg" src="1.png" alt="กระทงที่เลือก">
+          <div id="krathongIndicator" class="carousel-indicator">กระทงที่ 1 จาก 5</div>
+        </div>
+        <button type="button" id="nextBtn" class="carousel-btn">❯</button>
       </div>
 
       <div class="panel-heading second">
