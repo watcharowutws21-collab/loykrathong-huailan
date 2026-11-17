@@ -119,16 +119,17 @@ function escapeHTML(str) {
   );
 }
 
-// สร้างกระทงและให้ลอยวนต่อเนื่องไม่รู้จบโดยใช้กล่องห่อหุ้ม .krathong-content
-db.ref("krathongs").limitToLast(25).on("child_added", snapshot => {
+// สร้างกระทงและควบคุมระยะใกล้-ไกล (Perspective 3D พร้อมปรับสเกลให้ใหญ่ขึ้นสมดุลกับขนาดใหม่)
+db.ref("krathongs").limitToLast(25).on("child_added", (snapshot, prevChildKey) => {
   const item = snapshot.val();
   const key = snapshot.key;
   if (item) {
-    spawnRealKrathong(item, key);
+    const isLatest = !prevChildKey; 
+    spawnRealKrathong(item, key, isLatest);
   }
 });
 
-function spawnRealKrathong(item, key) {
+function spawnRealKrathong(item, key, isLatest) {
   const floatingAreaEl = document.getElementById("floatingArea");
   if (!floatingAreaEl) return;
 
@@ -140,7 +141,6 @@ function spawnRealKrathong(item, key) {
 
   const img = document.createElement("img");
   
-  // สุ่มรูปกระทงสำหรับข้อมูลเก่าที่ไม่มีรูป
   if (!item.krathong) {
     const defaultImages = ["1.png", "2.png", "3.png", "4.png", "5.png"];
     const charCode = key ? key.charCodeAt(key.length - 1) : 0;
@@ -158,12 +158,22 @@ function spawnRealKrathong(item, key) {
   node.appendChild(inner);
   floatingAreaEl.appendChild(node);
 
-  const height = floatingAreaEl.clientHeight || 450;
+  const height = floatingAreaEl.clientHeight || 480;
+  
   const bottomPos = Math.random() * (height * 0.6) + 10;
   node.style.bottom = `${bottomPos}px`;
   
-  // ตั้งค่าความเร็วและจุดเริ่มต้นสุ่มเพื่อไม่ให้กองรวมกันและลอยวนซ้ำได้ตลอดเวลา
-  const duration = 26000 + Math.random() * 9000;
+  let scaleFactor = 1.25 - (bottomPos / height) * 0.55; 
+  
+  if (isLatest) {
+    scaleFactor += 0.25; 
+    node.style.filter = "drop-shadow(0 0 18px rgba(248, 216, 137, 0.95))";
+  }
+
+  inner.style.transform = `scale(${scaleFactor})`;
+  node.style.zIndex = Math.round(height - bottomPos);
+
+  const duration = 28000 + Math.random() * 9000;
   const delay = -Math.random() * duration;
 
   node.style.animationDuration = `${duration}ms`;

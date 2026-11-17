@@ -12,15 +12,11 @@
 </head>
 <body>
 
-  <!-- ฉากหลังท้องฟ้า พระจันทร์ เมฆ โคมลอย และเงาสถาปัตยกรรมวัดไทยที่ขอบฟ้าด้านบน -->
+  <!-- ฉากหลังท้องฟ้า พระจันทร์ เมฆ โคมลอย และเงาสถาปัตยกรรมวัดไทย -->
   <div class="sky-background">
     <div class="big-moon"></div>
-    
-    <!-- กลุ่มเมฆลอย -->
     <div class="clouds cloud-1"></div>
     <div class="clouds cloud-2"></div>
-
-    <!-- โคมลอยบนท้องฟ้า -->
     <div class="floating-lanterns">
       <div class="lantern-item l1"></div>
       <div class="lantern-item l2"></div>
@@ -28,12 +24,10 @@
       <div class="lantern-item l4"></div>
       <div class="lantern-item l5"></div>
     </div>
-
-    <!-- เงาสถาปัตยกรรมวัดไทยและพระพุทธรูปที่ขอบฟ้า (วางไว้ด้านบนของแม่น้ำ) -->
     <div class="temple-silhouette">
       <svg viewBox="0 0 1440 280" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M0,280 L0,180 L30,180 L45,120 L55,120 L70,180 L130,180 L150,85 L160,85 L180,180 L240,180 L260,130 L280,180 L410,180 L435,50 L455,50 L480,180 L620,180 L645,40 L655,30 L665,40 L690,180 L870,180 L895,65 L925,180 L1090,180 L1115,110 L1135,180 L1290,180 L1315,130 L1335,180 L1440,180 L1440,280 Z" fill="#03050c"/>
-        <path d="M0,280 L0,210 L90,210 L115,150 L135,210 L370,210 L395,130 L415,210 L710,210 L740,110 L770,210 L1040,210 L1070,140 L1095,210 L1440,210 L1440,280 Z" fill="#010206"/>
+        <path d="M0,280 L0,180 L30,180 L45,120 L55,120 L70,180 L130,180 L150,85 L160,85 L180,180 L240,180 L260,130 L280,180 L410,180 L435,50 L455,50 L480,180 L620,180 L645,40 L655,30 L665,40 L690,180 L870,180 L895,65 L925,180 L1090,180 L1115,110 L1135,180 L1290,180 L1315,130 L1335,180 L1440,180 L1440,280 Z" fill="#020408"/>
+        <path d="M0,280 L0,210 L90,210 L115,150 L135,210 L370,210 L395,130 L415,210 L710,210 L740,110 L770,210 L1040,210 L1070,140 L1095,210 L1440,210 L1440,280 Z" fill="#010204"/>
       </svg>
     </div>
   </div>
@@ -94,7 +88,7 @@
         </div>
       </div>
 
-      <div class="input-group" style="margin-bottom: 12px;">
+      <div class="input-group" style="margin-bottom: 15px;">
         <label class="input-label">ชื่อผู้ลอย / คณะ</label>
         <div class="input-wrap">
           <input type="text" id="userNameInput" placeholder="กรอกชื่อของคุณ..." maxlength="30">
@@ -118,7 +112,6 @@
     <div class="content-layout">
       <div class="river-wrapper">
         <div id="floatingArea">
-          <!-- แสงสะท้อนบนผิวน้ำตรงกลาง -->
           <div class="river-reflection-path"></div>
           <div class="river-waves"></div>
         </div>
@@ -140,7 +133,7 @@
   <!-- ควบคุมเสียงเพลง -->
   <audio id="bgMusic" src="song.mp3" loop></audio>
   <div style="position: fixed; bottom: 15px; right: 20px; z-index: 100;">
-    <button id="toggleMusicBtn" style="background: rgba(13,25,48,0.9); border: 1px solid rgba(248,216,137,0.4); color: #f8d889; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-family: 'Prompt',sans-serif; font-size: 0.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
+    <button id="toggleMusicBtn" style="background: rgba(13,25,48,0.9); border: 1px solid rgba(248,216,137,0.4); color: #f8d889; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-family: 'Prompt',sans-serif; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.5);">
       🎵 เปิดเพลงเทศกาล
     </button>
   </div>
