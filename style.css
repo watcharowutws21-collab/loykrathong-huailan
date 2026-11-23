@@ -15,7 +15,7 @@ body {
   position: relative;
   display: flex;
   flex-direction: column;
-  font-size: 0.95rem;
+  font-size: 1.05rem;
 }
 
 /* ฉากหลังท้องฟ้า พระจันทร์ เมฆ โคมลอย */
@@ -29,10 +29,10 @@ body {
 
 .big-moon {
   position: fixed;
-  top: 56px;
+  top: 64px;
   right: 24px;
-  width: 64px;
-  height: 64px;
+  width: 68px;
+  height: 68px;
   background: radial-gradient(circle, #fffdfa 0%, #fcebbf 55%, #dfb458 100%);
   border-radius: 50%;
   box-shadow: 0 0 50px rgba(252, 235, 191, 0.7), 0 0 100px rgba(223, 180, 88, 0.35);
@@ -92,47 +92,48 @@ body {
 
 .topbar, .page, footer { position: relative; z-index: 10; }
 
-/* แถบด้านบนขยับขึ้นชิดขอบบนอีกนิด */
+/* แถบด้านบนขยายตัวอักษรให้อ่านชัดบนจอใหญ่ */
 .topbar {
   display: flex; justify-content: space-between; align-items: center;
-  padding: 6px 24px; background: rgba(7, 14, 27, 0.9);
+  padding: 8px 24px; background: rgba(7, 14, 27, 0.9);
   border-bottom: 1px solid rgba(248, 216, 137, 0.2); backdrop-filter: blur(10px);
 }
-.brand-section { display: flex; align-items: center; gap: 10px; transform: translateY(-2px); }
+.brand-section { display: flex; align-items: center; gap: 12px; transform: translateY(-2px); }
 .school-logo { 
-  width: 40px; height: 40px; object-fit: cover; border-radius: 50%; 
+  width: 46px; height: 46px; object-fit: cover; border-radius: 50%; 
   background: #fff; border: 2px solid var(--accent-gold); box-shadow: 0 3px 10px rgba(0, 0, 0, 0.5); 
 }
 .brand-text { display: flex; flex-direction: column; }
-.brand-eyebrow { font-size: 0.68rem; color: #a0aec0; line-height: 1.15; }
-.brand-text strong { font-size: 0.95rem; color: var(--accent-gold); white-space: nowrap; line-height: 1.2; }
+.brand-eyebrow { font-size: 0.85rem; color: #cbd5e1; line-height: 1.2; }
+.brand-text strong { font-size: 1.2rem; color: var(--accent-gold); white-space: nowrap; line-height: 1.25; }
 
 .festival-title-badge {
-  display: flex; align-items: center; gap: 6px; font-size: 0.82rem; letter-spacing: 1px;
-  color: var(--accent-gold); background: rgba(248, 216, 137, 0.1); padding: 4px 14px;
+  display: flex; align-items: center; gap: 8px; font-size: 1rem; letter-spacing: 1px;
+  color: var(--accent-gold); background: rgba(248, 216, 137, 0.1); padding: 5px 18px;
   border-radius: 20px; border: 1px solid rgba(248, 216, 137, 0.3); font-weight: 600; white-space: nowrap;
 }
 .counter-badge {
-  font-size: 0.85rem; color: var(--accent-gold); background: rgba(248, 216, 137, 0.12);
-  padding: 5px 14px; border-radius: 20px; border: 1px solid rgba(248, 216, 137, 0.3); font-weight: 600; white-space: nowrap;
+  font-size: 1.05rem; color: var(--accent-gold); background: rgba(248, 216, 137, 0.12);
+  padding: 6px 18px; border-radius: 20px; border: 1px solid rgba(248, 216, 137, 0.3); font-weight: 600; white-space: nowrap;
 }
-.live-dot { width: 8px; height: 8px; background: #48bb78; border-radius: 50%; box-shadow: 0 0 8px #48bb78; }
+.live-dot { width: 9px; height: 9px; background: #48bb78; border-radius: 50%; box-shadow: 0 0 8px #48bb78; }
 
 .page {
-  width: 100%; max-width: 100%; margin: 0 auto; padding: 4px 25px 6px 25px;
+  width: 100%; max-width: 100%; margin: 0 auto; padding: 6px 25px 6px 25px;
   display: flex; flex-direction: column; align-items: center; flex: 1;
 }
 
-.hero { text-align: center; margin-bottom: 4px; margin-top: -2px; }
-.hero .eyebrow { color: var(--accent-gold); font-size: 0.82rem; letter-spacing: 2px; font-weight: 500; }
-.hero h1 { font-size: 1.75rem; font-weight: 700; margin: 1px 0; color: #fff; white-space: nowrap; line-height: 1.2; }
+/* ส่วนหัวข้อหลักขยายใหญ่ขึ้นสำหรับขึ้นโปรเจกเตอร์ */
+.hero { text-align: center; margin-bottom: 8px; margin-top: 0; }
+.hero .eyebrow { color: var(--accent-gold); font-size: 1.05rem; letter-spacing: 2px; font-weight: 500; }
+.hero h1 { font-size: 2.5rem; font-weight: 700; margin: 2px 0; color: #fff; white-space: nowrap; line-height: 1.2; }
 .hero h1 span { color: var(--accent-gold); }
-.hero p { color: #cbd5e1; font-size: 0.88rem; line-height: 1.25; }
+.hero p { color: #e2e8f0; font-size: 1.1rem; line-height: 1.3; }
 
 /* ฟอร์มลอยกระทงและระบบสไลด์ */
 .ui-container {
   background: rgba(13, 25, 48, 0.95); border: 1px solid rgba(248, 216, 137, 0.35);
-  border-radius: 16px; padding: 16px 25px; width: 100%; max-width: 600px;
+  border-radius: 16px; padding: 18px 25px; width: 100%; max-width: 620px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(12px); margin-bottom: 10px; z-index: 100;
 }
 .ui-container.hidden { display: none; }
@@ -141,73 +142,73 @@ body {
 .panel-heading.second { margin-top: 14px; }
 .step {
   background: linear-gradient(135deg, #f8d889, #d4af37); color: #070e1b;
-  width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center;
-  justify-content: center; font-weight: 700; font-size: 0.85rem; flex-shrink: 0;
+  width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-weight: 700; font-size: 0.95rem; flex-shrink: 0;
 }
-.panel-heading h2 { font-size: 1.05rem; color: #fff; font-weight: 600; }
-.panel-heading p { font-size: 0.8rem; color: #cbd5e1; }
+.panel-heading h2 { font-size: 1.15rem; color: #fff; font-weight: 600; }
+.panel-heading p { font-size: 0.9rem; color: #cbd5e1; }
 
 .carousel-container { display: flex; align-items: center; justify-content: center; gap: 12px; margin: 10px 0; }
 .carousel-btn {
   background: rgba(248, 216, 137, 0.15); border: 2px solid var(--accent-gold); color: var(--accent-gold);
-  font-size: 1.3rem; width: 42px; height: 42px; border-radius: 50%; cursor: pointer;
+  font-size: 1.4rem; width: 44px; height: 44px; border-radius: 50%; cursor: pointer;
   display: flex; align-items: center; justify-content: center; transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(0,0,0,0.4); flex-shrink: 0;
 }
 .carousel-btn:hover { background: var(--accent-gold); color: #070e1b; transform: scale(1.08); }
 .carousel-view {
-  flex: 1; max-width: 240px; background: rgba(7, 14, 27, 0.95);
+  flex: 1; max-width: 250px; background: rgba(7, 14, 27, 0.95);
   border: 3px solid var(--accent-gold); border-radius: 18px; padding: 12px;
   display: flex; flex-direction: column; align-items: center; box-shadow: 0 0 25px rgba(248, 216, 137, 0.35);
 }
 .carousel-view img {
-  width: 130px; height: 130px; object-fit: contain; border-radius: 12px;
+  width: 135px; height: 135px; object-fit: contain; border-radius: 12px;
   background: rgba(255, 255, 255, 0.05); filter: drop-shadow(0 6px 12px rgba(0,0,0,0.7));
   animation: bobbingChoice 3s ease-in-out infinite;
 }
 .carousel-indicator {
-  margin-top: 8px; font-size: 0.85rem; font-weight: 600; color: var(--accent-gold);
-  background: rgba(248, 216, 137, 0.12); padding: 3px 10px; border-radius: 10px;
+  margin-top: 8px; font-size: 0.95rem; font-weight: 600; color: var(--accent-gold);
+  background: rgba(248, 216, 137, 0.12); padding: 4px 12px; border-radius: 10px;
 }
 @keyframes bobbingChoice {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-4px); }
 }
 
-.input-label { display: block; font-size: 0.8rem; color: var(--accent-gold); margin-bottom: 4px; font-weight: 500; }
+.input-label { display: block; font-size: 0.9rem; color: var(--accent-gold); margin-bottom: 4px; font-weight: 500; }
 .input-wrap { position: relative; }
 .input-wrap input {
-  width: 100%; padding: 9px 12px; background: rgba(7, 14, 27, 0.85);
+  width: 100%; padding: 10px 14px; background: rgba(7, 14, 27, 0.85);
   border: 1px solid rgba(248, 216, 137, 0.35); border-radius: 10px; color: #fff;
-  font-family: 'Prompt', sans-serif; font-size: 0.9rem; outline: none;
+  font-family: 'Prompt', sans-serif; font-size: 1rem; outline: none;
 }
 .input-wrap input:focus { border-color: var(--accent-gold); box-shadow: 0 0 8px rgba(248, 216, 137, 0.3); }
-#charCount { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.75rem; color: #a0aec0; }
+#charCount { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-size: 0.85rem; color: #a0aec0; }
 
 #btnFloat {
-  width: 100%; margin-top: 12px; padding: 11px;
+  width: 100%; margin-top: 12px; padding: 12px;
   background: linear-gradient(135deg, #f8d889, #d4af37); color: #070e1b;
-  border: none; border-radius: 12px; font-family: 'Prompt', sans-serif; font-size: 0.95rem; font-weight: 700;
+  border: none; border-radius: 12px; font-family: 'Prompt', sans-serif; font-size: 1.05rem; font-weight: 700;
   cursor: pointer; box-shadow: 0 4px 15px rgba(212, 175, 55, 0.45); transition: opacity 0.2s, transform 0.2s;
 }
 #btnFloat:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); }
 #btnFloat:disabled { opacity: 0.5; cursor: not-allowed; }
 
-#statusMessage { text-align: center; font-size: 0.8rem; color: var(--accent-gold); margin-top: 6px; font-weight: 500; }
-.privacy-note { text-align: center; font-size: 0.7rem; color: #94a3b8; margin-top: 4px; }
+#statusMessage { text-align: center; font-size: 0.9rem; color: var(--accent-gold); margin-top: 6px; font-weight: 500; }
+.privacy-note { text-align: center; font-size: 0.8rem; color: #94a3b8; margin-top: 4px; }
 
 .floating-toggle-btn {
   background: linear-gradient(135deg, #f8d889, #d4af37); color: #070e1b; border: none;
-  padding: 8px 20px; border-radius: 30px; font-family: 'Prompt', sans-serif;
-  font-weight: 700; font-size: 0.92rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-  margin-bottom: 6px; transition: transform 0.2s;
+  padding: 10px 26px; border-radius: 30px; font-family: 'Prompt', sans-serif;
+  font-weight: 700; font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  margin-bottom: 8px; transition: transform 0.2s;
 }
 .floating-toggle-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
 /* พื้นที่แม่น้ำและกล่องคำอธิษฐาน */
 .content-layout {
   position: relative; width: 100%; display: flex; flex-direction: column; flex: 1;
-  padding-right: 315px; margin-top: 6px; min-height: 0;
+  padding-right: 350px; margin-top: 6px; min-height: 0;
 }
 .river-wrapper {
   width: 100%; display: flex; flex-direction: column; flex: 1; position: relative; min-height: 0;
@@ -236,12 +237,12 @@ body {
   100% { transform: translateY(50px); }
 }
 
-/* ขยับกล่องคำอธิษฐาน LIVE ลงมาต่ำลงอีกและให้ลงมาเกือบชิดขอบล่าง */
+/* กล่องคำอธิษฐาน LIVE ด้านขวาขยายตัวหนังสือให้ชัดขึ้น */
 .wishes-panel {
   position: absolute;
   right: 0px;
   top: 96px;
-  width: 295px;
+  width: 330px;
   background: rgba(13, 25, 48, 0.94);
   border: 1px solid rgba(248, 216, 137, 0.4);
   border-radius: 14px;
@@ -255,28 +256,28 @@ body {
   z-index: 30;
 }
 .wishes-panel-header {
-  background: rgba(248, 216, 137, 0.12); padding: 8px 14px;
+  background: rgba(248, 216, 137, 0.12); padding: 10px 14px;
   border-bottom: 1px solid rgba(248, 216, 137, 0.25);
   display: flex; justify-content: space-between; align-items: center;
-  font-size: 0.85rem; font-weight: 700; color: var(--accent-gold);
+  font-size: 1.05rem; font-weight: 700; color: var(--accent-gold);
 }
 .live-indicator {
-  background: #e53e3e; color: #fff; font-size: 0.65rem; padding: 2px 8px;
+  background: #e53e3e; color: #fff; font-size: 0.75rem; padding: 2px 9px;
   border-radius: 10px; animation: pulse 1.5s infinite; font-weight: 700;
 }
 @keyframes pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
 }
-.wishes-list { padding: 8px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.wishes-list { padding: 10px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 8px; }
 .wish-card-item {
   background: rgba(7, 14, 27, 0.8); border: 1px solid rgba(248, 216, 137, 0.25);
-  border-radius: 10px; padding: 8px 10px; font-size: 0.8rem; box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  border-radius: 10px; padding: 10px 12px; font-size: 0.95rem; box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   animation: fadeIn 0.4s ease;
 }
-.wish-card-name { color: var(--accent-gold); font-weight: 700; margin-bottom: 2px; font-size: 0.85rem; }
-.wish-card-text { color: #f1f5f9; word-break: break-word; line-height: 1.3; }
-.wish-item-placeholder { color: #cbd5e1; text-align: center; font-size: 0.85rem; margin-top: 30px; }
+.wish-card-name { color: var(--accent-gold); font-weight: 700; margin-bottom: 3px; font-size: 1rem; }
+.wish-card-text { color: #f1f5f9; word-break: break-word; line-height: 1.35; font-size: 0.95rem; }
+.wish-item-placeholder { color: #cbd5e1; text-align: center; font-size: 0.95rem; margin-top: 30px; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
@@ -287,18 +288,19 @@ body {
   position: absolute; will-change: transform;
   animation-name: floatLoop; animation-timing-function: linear; animation-iteration-count: infinite;
 }
-.krathong-content { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.krathong-content { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .krathong-content img {
-  width: 120px; height: 120px; object-fit: contain;
+  width: 125px; height: 125px; object-fit: contain;
   filter: drop-shadow(0 8px 14px rgba(0,0,0,0.8));
   animation: bobbing 3s ease-in-out infinite;
 }
 
+/* ป้ายคำอธิษฐานใต้กระทงขยายใหญ่ขึ้นให้อ่านชัดบนจอโปรเจกเตอร์ */
 .wishText {
-  background: rgba(13, 25, 48, 0.96); border: 1.5px solid rgba(248, 216, 137, 0.6);
-  color: #fff; padding: 5px 10px; border-radius: 12px; font-size: 0.75rem;
+  background: rgba(13, 25, 48, 0.96); border: 1.5px solid rgba(248, 216, 137, 0.65);
+  color: #fff; padding: 6px 14px; border-radius: 14px; font-size: 0.95rem;
   white-space: normal; word-break: break-word; text-align: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.75); max-width: 200px; font-weight: 600; line-height: 1.3;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.75); max-width: 260px; font-weight: 600; line-height: 1.35;
 }
 
 @keyframes bobbing {
@@ -307,18 +309,18 @@ body {
 }
 
 @keyframes floatLoop {
-  0% { transform: translateX(-180px); }
-  100% { transform: translateX(calc(100vw + 180px)); }
+  0% { transform: translateX(-220px); }
+  100% { transform: translateX(calc(100vw + 220px)); }
 }
 
 footer {
-  text-align: center; font-size: 0.75rem; color: #94a3b8; 
-  padding: 5px 0; margin-top: 4px; background: rgba(3, 5, 12, 0.9);
+  text-align: center; font-size: 0.85rem; color: #94a3b8; 
+  padding: 6px 0; margin-top: 4px; background: rgba(3, 5, 12, 0.9);
 }
 
-/* 📱 ปรับแต่งเฉพาะหน้าจอมือถือ */
+/* 📱 ปรับแต่งเฉพาะหน้าจอมือถือ (คงขนาดพอดีจอมือถือไว้) */
 @media (max-width: 900px) {
-  body { height: auto; overflow-x: hidden; overflow-y: auto; }
+  body { height: auto; overflow-x: hidden; overflow-y: auto; font-size: 0.95rem; }
   .big-moon { top: 88px; right: 14px; width: 48px; height: 48px; }
   .topbar {
     display: grid; grid-template-columns: auto auto; justify-content: space-between;
@@ -330,7 +332,15 @@ footer {
   .brand-text strong { font-size: 0.75rem; }
   .counter-badge { grid-column: 2 / 3; grid-row: 1 / 2; font-size: 0.7rem; padding: 3px 8px; }
   .festival-title-badge { grid-column: 1 / 3; grid-row: 2 / 3; justify-content: center; font-size: 0.75rem; padding: 3px 10px; width: 100%; }
+  .hero .eyebrow { font-size: 0.82rem; }
+  .hero h1 { font-size: 1.75rem; }
+  .hero p { font-size: 0.88rem; }
+  .floating-toggle-btn { font-size: 0.92rem; padding: 8px 20px; }
+  .wishText { font-size: 0.78rem; max-width: 200px; padding: 5px 10px; }
   .content-layout { padding-right: 0; }
   .wishes-panel { position: relative; right: auto; top: auto; width: 100%; height: 180px; max-height: none; margin-top: 15px; }
+  .wishes-panel-header { font-size: 0.85rem; }
+  .wish-card-name { font-size: 0.85rem; }
+  .wish-card-text { font-size: 0.8rem; }
   #floatingArea { min-height: 300px; }
 }
